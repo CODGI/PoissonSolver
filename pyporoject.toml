@@ -1,0 +1,15 @@
+[project]
+name = "poisson"
+version = "0.1.0"
+description = "2D Electrostatics Poisson Solver"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "matplotlib",
+]
+
+[tool.pytest.ini_options]
+addopts = "-q -ra"
+testpaths = ["tests"]
+pythonpath = ["src"]
