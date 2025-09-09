@@ -30,37 +30,12 @@ class Calculation:
                 continue
         self.rho_vec = self.rho.flatten() / self.epsilon
 
-    def addBC(self, b):
+    def addBC(self):
         """
         Boundary conditions are implemented as arrays of size 2*Nx+2*Ny+4 and go clockwise from the edge (0,Ly) around the domain.
         At the moment the bc just default to 0.
-        TODO: Maybe check continuity of bc=
         """
-        if b.shape == (2 * (self.grid.nx + self.grid.ny) + 4,):
-            self.b = b
-        else:
-            raise ValueError("Boundary conditions don't match domain!")
         self.bc = np.zeros(self.grid.nx * self.grid.ny)
-        """
-        # arounddd top
-        self.bc[: self.grid.nx] += b[1 : self.grid.nx + 1] / (
-            self.grid.dy**2
-        )  # Top row
-        self.bc[:: self.grid.nx] += b[-1 : -1 - self.grid.ny] / (
-            self.grid.dx**2
-        )  # left column
-        self.bc[self.grid.nx - 1 :: self.grid.nx] += b[
-            self.grid.nx + 2 : self.grid.nx + 2 + self.grid.ny
-        ] / (
-            self.grid.dx**2
-        )  # right column
-        self.bc[self.grid.ny * (self.grid.nx - 1) :: -1] += b[
-            self.grid.nx + self.grid.ny + 3 : 2 * self.grid.nx + self.grid.ny + 3
-        ] / (
-            self.grid.dy**2
-        )  # bottom row
-        print(self.bc)
-            """
 
     def buildMatrix(self):
         mainDiag = (
@@ -73,12 +48,9 @@ class Calculation:
         yDiag = (1 / self.grid.dy) ** 2 * np.ones(
             (self.grid.nx * self.grid.ny) - self.grid.nx
         )
-        self.M = (
-            sparse.diags(mainDiag, 0)
-            + sparse.diags(xDiag, 1)
-            + sparse.diags(xDiag, -1)
-            + sparse.diags(yDiag, self.grid.nx)
-            + sparse.diags(yDiag, -self.grid.nx)
+        self.M = sparse.diags(
+            [mainDiag, xDiag, xDiag, yDiag, yDiag],
+            [0, 1, -1, self.grid.nx, -self.grid.nx],
         )
 
     def solve(self):
@@ -86,18 +58,18 @@ class Calculation:
         return x.reshape((self.grid.nx, self.grid.ny))
 
 
-g = Grid(10, 10, 0.1, 0.1)
+g = Grid(1, 1, 0.01, 0.01)
 calc = Calculation(g)
-c = Charge(4, 4, "+")
-c2 = Charge(8, 8, "+")
+c = Charge(0.5, 0.4, "-")
+c2 = Charge(0.5, 0.5, "+")
+c3 = Charge(0.5, 0.6, "-")
 calc.addCharge(c)
 calc.addCharge(c2)
+calc.addCharge(c3)
 calc.buildRho()
-b = np.zeros(2 * (101 + 101) + 4)
-calc.addBC(b)
+calc.addBC()
 calc.buildMatrix()
 phi = calc.solve()
-# plt.imsave("phi.png", phi, cmap="viridis")
 plt.imshow(phi, cmap="viridis")
 plt.colorbar(label="Potential")
 plt.savefig("field_plot.png", dpi=300, bbox_inches="tight")
