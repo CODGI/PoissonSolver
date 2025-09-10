@@ -3,7 +3,7 @@ from poisson.grid import Grid
 
 
 class calculateFields:
-    def __init(self, phi, dx, dy, grid):
+    def __init__(self, phi, dx, dy, grid):
         self.dx, self.dy = dx, dy
         self.grid = grid
         self.phi = phi
