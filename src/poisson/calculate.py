@@ -1,5 +1,5 @@
-from poisson.grid import Grid
 from poisson.charge import Charge
+from poisson.grid import Grid
 import numpy as np
 from scipy import sparse
 import matplotlib.pyplot as plt
@@ -30,12 +30,9 @@ class Calculation:
                 continue
         self.rho_vec = self.rho.flatten() / self.epsilon
 
-    def addBC(self):
-        """
-        Boundary conditions are implemented as arrays of size 2*Nx+2*Ny+4 and go clockwise from the edge (0,Ly) around the domain.
-        At the moment the bc just default to 0.
-        """
-        self.bc = np.zeros(self.grid.nx * self.grid.ny)
+    def addBC(self, bc):
+        """ """
+        self.bc = bc.flatten()
 
     def buildMatrix(self):
         mainDiag = (
@@ -54,7 +51,7 @@ class Calculation:
         )
 
     def solve(self):
-        x = sparse.linalg.spsolve(self.M, self.rho_vec)
+        x = sparse.linalg.spsolve(self.M, self.rho_vec - self.bc)
         return x.reshape((self.grid.nx, self.grid.ny))
 
 
@@ -67,7 +64,7 @@ calc.addCharge(c)
 calc.addCharge(c2)
 calc.addCharge(c3)
 calc.buildRho()
-calc.addBC()
+calc.addBC(np.zeros((101, 101)))
 calc.buildMatrix()
 phi = calc.solve()
 plt.imshow(phi, cmap="viridis")
