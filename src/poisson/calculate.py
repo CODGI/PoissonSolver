@@ -2,7 +2,7 @@ from poisson.charge import Charge
 from poisson.grid import Grid
 import numpy as np
 from scipy import sparse
-import matplotlib.pyplot as plt
+from plotter import Plotter
 
 
 class Calculation:
@@ -31,7 +31,6 @@ class Calculation:
         self.rho_vec = self.rho.flatten() / self.epsilon
 
     def addBC(self, bc):
-        """ """
         self.bc = bc.flatten()
 
     def buildMatrix(self):
@@ -55,7 +54,8 @@ class Calculation:
         return x.reshape((self.grid.nx, self.grid.ny))
 
 
-g = Grid(1, 1, 0.01, 0.01)
+Lx, Ly, dx, dy = 1, 1, 0.01, 0.01
+g = Grid(Lx, Ly, dx, dy)
 calc = Calculation(g)
 c = Charge(0.5, 0.4, "-")
 c2 = Charge(0.5, 0.5, "+")
@@ -64,9 +64,8 @@ calc.addCharge(c)
 calc.addCharge(c2)
 calc.addCharge(c3)
 calc.buildRho()
-calc.addBC(np.zeros((101, 101)))
+calc.addBC(np.zeros((g.nx, g.ny)))
 calc.buildMatrix()
 phi = calc.solve()
-plt.imshow(phi, cmap="viridis")
-plt.colorbar(label="Potential")
-plt.savefig("field_plot.png", dpi=300, bbox_inches="tight")
+p = Plotter(dx, dy, Lx, Ly, g, phi)
+p.plot()

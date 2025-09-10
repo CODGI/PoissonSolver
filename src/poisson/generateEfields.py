@@ -2,7 +2,7 @@ import numpy as np
 from poisson.grid import Grid
 
 
-class calculateFields:
+class fieldCalculator:
     def __init__(self, phi, dx, dy, grid):
         self.dx, self.dy = dx, dy
         self.grid = grid
