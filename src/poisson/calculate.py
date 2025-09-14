@@ -14,6 +14,15 @@ class Calculation:
     def addCharge(self, c):
         self.charges.append(c)
 
+    def addCharges(self, positions, signs):
+        if len(positions) == 0 or len(signs) == 0:
+            raise ValueError("Neitehr positions nor charges can be empty")
+        if len(positions) != len(signs):
+            raise ValueError("Must have same size.")
+        for (x, y), s in zip(positions, signs):
+            c = Charge(x, y, s)
+            self.addCharge(c)
+
     def buildRho(self):
         self.rho = np.zeros((self.grid.nx, self.grid.ny))
         for c in self.charges:
@@ -57,12 +66,7 @@ class Calculation:
 Lx, Ly, dx, dy = 1, 1, 0.01, 0.01
 g = Grid(Lx, Ly, dx, dy)
 calc = Calculation(g)
-c = Charge(0.5, 0.4, "-")
-c2 = Charge(0.5, 0.5, "+")
-c3 = Charge(0.5, 0.6, "-")
-calc.addCharge(c)
-calc.addCharge(c2)
-calc.addCharge(c3)
+calc.addCharges([(0.5, 0.4), (0.5, 0.5), (0.6, 0.5)], ["-", "+", "-"])
 calc.buildRho()
 calc.addBC(np.zeros((g.nx, g.ny)))
 calc.buildMatrix()
