@@ -5,8 +5,8 @@ from grid import Grid
 
 
 class Plotter:
-    def __init__(self, dx, dy, Lx, Ly, grid, phi):
-        self.dx, self.dy, self.Lx, self.Ly = dx, dy, Lx, Ly
+    def __init__(self, grid, phi):
+        self.dx, self.dy, self.Lx, self.Ly = grid.dx, grid.dy, grid.Lx, grid.Ly
         self.grid = grid
         self.phi = phi
 
