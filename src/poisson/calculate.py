@@ -1,6 +1,7 @@
 from poisson.charge import Charge
 from poisson.grid import Grid
 import numpy as np
+from bc_generators import ConstantBoundaries
 from scipy import sparse
 from plotter import Plotter
 
@@ -68,7 +69,8 @@ g = Grid(Lx, Ly, dx, dy)
 calc = Calculation(g)
 calc.addCharges([(0.5, 0.4), (0.5, 0.5), (0.6, 0.5)], ["-", "+", "-"])
 calc.buildRho()
-calc.addBC(np.zeros((g.nx, g.ny)))
+bc = ConstantBoundaries(g, 0).getBoundaries()
+calc.addBC(bc)
 calc.buildMatrix()
 phi = calc.solve()
 p = Plotter(dx, dy, Lx, Ly, g, phi)
