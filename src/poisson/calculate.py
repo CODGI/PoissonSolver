@@ -67,16 +67,15 @@ class Calculation:
         return x.reshape((self.grid.nx, self.grid.ny))
 
 
-Lx, Ly, dx, dy = 1, 1, 0.01, 0.01
-g = Grid(Lx, Ly, dx, dy)
-calc = Calculation(g)
-calc.addCharges([(0.5, 0.4), (0.5, 0.5), (0.6, 0.5)], ["-", "+", "-"])
-# calc.addCharges([(0.5, 0.5)], ["+"])
-calc.buildRho()
-bc = ConstantBoundaries(g, 0).getBoundaries()
-# bc2 = FreeSpaceboundaries(g, calc.charges).getBoundaries()
-calc.addBC(bc)
-calc.buildMatrix()
-phi = calc.solve()
-p = Plotter(g, phi)
-p.plot()
+if __name__ == "__main__":
+    Lx, Ly, dx, dy = 1, 1, 0.01, 0.01
+    g = Grid(Lx, Ly, dx, dy)
+    calc = Calculation(g)
+    calc.addCharges([(0.5, 0.4), (0.5, 0.5), (0.6, 0.5)], ["-", "+", "-"])
+    calc.buildRho()
+    bc = ConstantBoundaries(g, 0).getBoundaries()
+    calc.addBC(bc)
+    calc.buildMatrix()
+    phi = calc.solve()
+    p = Plotter(g, phi)
+    p.plot()
