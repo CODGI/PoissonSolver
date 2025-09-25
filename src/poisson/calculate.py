@@ -1,7 +1,7 @@
 from poisson.charge import Charge
 from poisson.grid import Grid
 import numpy as np
-from bc_generators import ConstantBoundaries
+from bc_generators import ConstantBoundaries, FreeSpaceboundaries
 from scipy import sparse
 from plotter import Plotter
 
@@ -15,13 +15,16 @@ class Calculation:
     def addCharge(self, c):
         self.charges.append(c)
 
+    def getCharges(self):
+        return self.charges
+
     def addCharges(self, positions, signs):
         if len(positions) == 0 or len(signs) == 0:
             raise ValueError("Neitehr positions nor charges can be empty")
         if len(positions) != len(signs):
             raise ValueError("Must have same size.")
         for (x, y), s in zip(positions, signs):
-            c = Charge(x, y, s)
+            c = Charge(x + self.grid.dx / 10, y + self.grid.dy / 10, s)
             self.addCharge(c)
 
     def buildRho(self):
@@ -68,8 +71,10 @@ Lx, Ly, dx, dy = 1, 1, 0.01, 0.01
 g = Grid(Lx, Ly, dx, dy)
 calc = Calculation(g)
 calc.addCharges([(0.5, 0.4), (0.5, 0.5), (0.6, 0.5)], ["-", "+", "-"])
+# calc.addCharges([(0.5, 0.5)], ["+"])
 calc.buildRho()
 bc = ConstantBoundaries(g, 0).getBoundaries()
+# bc2 = FreeSpaceboundaries(g, calc.charges).getBoundaries()
 calc.addBC(bc)
 calc.buildMatrix()
 phi = calc.solve()

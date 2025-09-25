@@ -25,3 +25,5 @@ class Plotter:
         self.plotSomething(self.phi, "Potential", "")
         self.plotSomething(Ex, "Ex", "")
         self.plotSomething(Ey, "Ey", "")
+        E = np.sqrt(np.abs(Ex) ** 2 + np.abs(Ey) ** 2)
+        self.plotSomething(E, "abs(E)", "")
